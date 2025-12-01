@@ -32,6 +32,8 @@ public class TokenStream {
 	public TokenStream(String fileName) {
 		try {
 			input = new BufferedReader(new FileReader(fileName));
+			// prime the scanner with the first character
+			nextChar = readChar();
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found: " + fileName);
 			// System.exit(1); // Removed to allow ScannerDemo to continue
@@ -62,6 +64,21 @@ public class TokenStream {
 					nextChar = readChar();
 				}
 				skipWhiteSpace();
+			} else if (nextChar == '*') { // block comment /* ... */
+				// consume until "*/" or EOF
+				nextChar = readChar(); // move past the '*'
+				while (!isEof) {
+					if (nextChar == '*') {
+						nextChar = readChar();
+						if (nextChar == '/') {
+							nextChar = readChar();
+							break;
+						}
+					} else {
+						nextChar = readChar();
+					}
+				}
+				skipWhiteSpace();
 			} else {
 				t.setValue("/");
 				t.setType("Operator");
@@ -87,7 +104,7 @@ public class TokenStream {
 					return t;
 				}
 			case '<':
-				// <=
+				// <= and <>
 				nextChar = readChar();
 				if (nextChar == '='){
 					t.setValue(t.getValue() + nextChar);
@@ -174,7 +191,8 @@ public class TokenStream {
 			// now see if this is a keyword
 			if (isKeyword(t.getValue())) {
 				t.setType("Keyword");
-			} else if (t.getValue().equals("True") || t.getValue().equals("False")) {
+			} else if (t.getValue().equals("True") || t.getValue().equals("False") ||
+					t.getValue().equals("true") || t.getValue().equals("false")) {
 				t.setType("Literal");
 			}
 			if (isEndOfToken(nextChar)) { // If token is valid, returns.
@@ -245,7 +263,7 @@ public class TokenStream {
 	}
 
 	private boolean isEndOfToken(char c) { // Is the value a seperate token?
-		return (isWhiteSpace(nextChar) || isOperator(nextChar) || isSeparator(nextChar) || isEof);
+		return (isWhiteSpace(c) || isOperator(c) || isSeparator(c) || isEof);
 	}
 
 	private void skipWhiteSpace() {
@@ -257,7 +275,7 @@ public class TokenStream {
 
 	private boolean isSeparator(char c) {
 		// TODO TO BE COMPLETED
-		return (c == '(' || c == ')' || c == '{' || c == '}' || c == ';' || c == ',');
+		return (c == ';' || c == ',' || c == '(' || c == ')' || c == '{' || c == '}');
 	}
 
 	private boolean isOperator(char c) {
@@ -279,6 +297,4 @@ public class TokenStream {
 	public boolean isEndofFile() {
 		return isEof;
 	}
-
 }
-
