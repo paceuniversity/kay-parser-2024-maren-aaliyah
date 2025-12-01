@@ -279,4 +279,30 @@ public class TokenStream {
 	public boolean isEndofFile() {
 		return isEof;
 	}
+
 }
+
+private boolean isSeparator(char c) {
+		// Separators in KAY: ; , ( ) { }
+		return (c == ';' || c == ',' || c == '(' || c == ')' || c == '{' || c == '}');
+	}
+
+	private boolean isOperator(char c) {
+		// Operators in KAY (single-char): + - * / < > ! = & | :
+		// Multi-char handled in nextToken()
+		return (c == '+' || c == '-' || c == '*' || c == '/' ||
+		        c == '<' || c == '>' || c == '!' || c == '=' ||
+		        c == '&' || c == '|' || c == ':');
+	}
+
+	private boolean isLetter(char c) {
+		return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+	}
+
+	private boolean isDigit(char c) {
+		return (c >= '0' && c <= '9');
+	}
+
+	public boolean isEndofFile() {
+		return isEof;
+	}
