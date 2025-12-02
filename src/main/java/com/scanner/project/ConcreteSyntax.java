@@ -83,7 +83,8 @@ public class ConcreteSyntax {
 		else if (token.getValue().equals("bool"))
 			t = new Type(Type.BOOLEAN);
 		else
-			throw new RuntimeException(SyntaxError("integer | boolean"));
+			// kept message consistent with the keywords used elsewhere
+			throw new RuntimeException(SyntaxError("integer | bool"));
 		token = input.nextToken(); // pass over the type
 		return t;
 	}
@@ -278,10 +279,10 @@ public class ConcreteSyntax {
 		} else if (token.getType().equals("Literal")) {
 			Value v = null;
 			if (isInteger(token.getValue()))
-				v = new Value((Integer.parseInt(token.getValue())));
-			else if (token.getValue().equals("True"))
+				v = new Value((new Integer(token.getValue())).intValue());
+			else if (token.getValue().equals("True") || token.getValue().equals("true"))
 				v = new Value(true);
-			else if (token.getValue().equals("False"))
+			else if (token.getValue().equals("False") || token.getValue().equals("false"))
 				v = new Value(false);
 			else
 				throw new RuntimeException(SyntaxError("Literal"));
