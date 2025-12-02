@@ -50,8 +50,8 @@ public class ConcreteSyntax {
 		this.match("main");
 		this.match("{");
 		Program p = new Program();
-		p.decpart = this.declarations();
-		p.body = this.statements();
+		p.decpart = declarations();
+		p.body = statements();
 		this.match("}");
 		return p;
 	}
@@ -79,9 +79,9 @@ public class ConcreteSyntax {
 		// Type --> integer | bool
 		Type t = null;
 		if (token.getValue().equals("integer"))
-			t = new Type(token.getValue());
+			t = new Type(Type.INTEGER);
 		else if (token.getValue().equals("bool"))
-			t = new Type(token.getValue());
+			t = new Type(Type.BOOLEAN);
 		else
 			// kept message consistent with the keywords used elsewhere
 			throw new RuntimeException(SyntaxError("integer | bool"));
@@ -132,7 +132,7 @@ public class ConcreteSyntax {
 		} else if (token.getType().equals("Identifier")) { // Assignment
 			// TODO TO BE COMPLETED
 			s = assignment();
-			match(";");
+			//match(";");
 		} else
 			throw new RuntimeException(SyntaxError("Statement"));
 		return s;
@@ -152,13 +152,13 @@ public class ConcreteSyntax {
 		Assignment a = new Assignment();
 		if (token.getType().equals("Identifier")) {
 			// TODO TO BE COMPLETED
-			Variable target = new Variable();
-			target.id = token.getValue();
-			a.target = target;
+			Variable v = new Variable();
+			v.id = token.getValue();
+			a.target = v;
 			token = input.nextToken();
-
 			match(":=");
 			a.source = expression();
+			match(";");
 		} else
 			throw new RuntimeException(SyntaxError("Identifier"));
 		return a;
@@ -308,7 +308,7 @@ public class ConcreteSyntax {
 		c.thenbranch = statement();
 
 		if (token.getValue().equals("else")){
-			match("else");
+			token = input.nextToken();
 			c.elsebranch = statement();
 		} else {
 			c.elsebranch = null;
